@@ -3,28 +3,43 @@ package com.fourtwod.service.user;
 import com.fourtwod.domain.user.User;
 import com.fourtwod.domain.user.UserId;
 import com.fourtwod.domain.user.UserRepository;
-import com.fourtwod.web.dto.UserSaveRequestDto;
+import com.fourtwod.web.dto.UserDto;
 import com.fourtwod.web.handler.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 @Service
 public class UserService {
-
-    private final HttpSession httpSession;
     private final UserRepository userRepository;
 
+    public User login(UserDto userDto) {
+        UserId userId = UserId.builder()
+                .email(userDto.getEmail())
+                .registrationId(userDto.getRegistrationId())
+                .build();
+
+        User user = userRepository.findByUserId(userId)
+                .map(entity -> entity.updateName(userDto.getName()))
+                .orElse(User.builder()
+                        .userId(userId)
+                        .name(userDto.getName())
+                        .build());
+
+        userRepository.save(user);
+
+        return user;
+    }
+
     @Transactional
-    public ResponseCode checkOrUpdateNickName(UserSaveRequestDto userSaveRequestDto) throws Exception {
-        String registrationId = userSaveRequestDto.getRegistrationId();
+    public ResponseCode checkOrUpdateNickName(int flag, UserDto userDto) {
+        String registrationId = userDto.getRegistrationId();
 
         User userByEmail = userRepository.findByUserId(UserId.builder()
-                    .email(userSaveRequestDto.getEmail())
+                    .email(userDto.getEmail())
                     .registrationId(registrationId)
                     .build())
                 .orElse(null);
@@ -34,7 +49,7 @@ public class UserService {
             return ResponseCode.COMM_E001;
         }
 
-        String nickname = userSaveRequestDto.getNickname();
+        String nickname = userDto.getNickname();
 
         // 2자 이상 10자 이하 닉네임이 아닌 경우
         if (nickname.length() < 2 || nickname.length() > 10) {
@@ -59,15 +74,17 @@ public class UserService {
         }
 
         // 1인 경우에만 닉네임 변경
-        if ("1".equals(userSaveRequestDto.getBSave())) {
+        if (flag == 1) {
             userByEmail.updateNickname(nickname);
+        } else if (flag != 0) {
+            return ResponseCode.COMM_E001;
         }
 
         return ResponseCode.COMM_S000;
     }
 
     @Transactional
-    public ResponseCode deleteAll() throws Exception {
+    public ResponseCode deleteAll() {
         userRepository.deleteAll();
 
         return ResponseCode.COMM_S000;

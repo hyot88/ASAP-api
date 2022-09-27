@@ -25,6 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 , "/swagger-resources/**"
                 , "/favicon.ico"
                 , "/csrf"
+                , "/h2-console/**"
                 , "/token");
     }
 }

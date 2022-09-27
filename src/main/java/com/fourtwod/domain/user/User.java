@@ -1,14 +1,19 @@
 package com.fourtwod.domain.user;
 
 import com.fourtwod.domain.BaseTimeEntity;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class User extends BaseTimeEntity {
 
@@ -20,13 +25,6 @@ public class User extends BaseTimeEntity {
 
     @Column
     private String nickname;
-
-    @Builder
-    public User(UserId userId, String name, String nickname) {
-        this.userId = userId;
-        this.name = name;
-        this.nickname = nickname;
-    }
 
     public User updateName(String name) {
         this.name = name;

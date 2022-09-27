@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 import lombok.Getter;
 
 @Getter
+//TODO: Vendor는 별도로 관리가 필요함, application-real.properties로...
 public enum Vendor {
     /**
      * openssl rand -hex 16
