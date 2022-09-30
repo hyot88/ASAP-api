@@ -1,24 +1,18 @@
 package com.fourtwod.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fourtwod.config.auth.SecurityConfig;
-import com.fourtwod.config.auth.TokenDto;
 import com.fourtwod.domain.user.User;
 import com.fourtwod.domain.user.UserId;
 import com.fourtwod.domain.user.UserRepository;
 import com.fourtwod.web.dto.UserDto;
 import com.fourtwod.web.handler.ApiResult;
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
