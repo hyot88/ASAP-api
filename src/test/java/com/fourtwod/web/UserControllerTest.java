@@ -7,6 +7,7 @@ import com.fourtwod.domain.user.UserRepository;
 import com.fourtwod.web.dto.UserDto;
 import com.fourtwod.web.handler.ApiResult;
 import com.google.gson.Gson;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +28,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,8 +46,9 @@ public class UserControllerTest {
     private UserRepository userRepository;
 
     private MockMvc mvc;
-
     private String token;
+    private final String EMAIL = "test@test.com";
+    private final String REGISTRATION_ID = "google";
 
     @Before
     public void setup() throws Exception {
@@ -56,6 +57,7 @@ public class UserControllerTest {
                 .apply(springSecurity())
                 .build();
 
+        // 토큰 생성
         String code = "front";
         String secretKey = "7e8b6e0ec18ca17a9fc54a20848656d0";
 
@@ -73,18 +75,40 @@ public class UserControllerTest {
         ApiResult apiResult = new Gson().fromJson(test, ApiResult.class);
         Map<String, Object> map = (Map<String, Object>) apiResult.getData();
         token = (String) map.get("token");
+
+        // 사용자 로그인
+        UserDto userDto = UserDto.builder()
+                .email(EMAIL)
+                .registrationId(REGISTRATION_ID)
+                .name("tester")
+                .build();
+
+        String url = "http://localhost:" + port + "/user";
+
+        //when
+        mvc.perform(post(url)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isOk());
+    }
+
+    @After
+    public void exit() throws Exception {
+        userRepository.delete(User.builder()
+                .userId(UserId.builder()
+                        .email(EMAIL)
+                        .registrationId(REGISTRATION_ID)
+                        .build())
+                .build());
     }
 
     @Test
-    @Transactional
     public void 사용자_로그인() throws Exception {
-        String email = "test@test.com";
-        String registrationId = "google";
         String name = "tester";
-
         UserDto userDto = UserDto.builder()
-                .email(email)
-                .registrationId(registrationId)
+                .email(EMAIL)
+                .registrationId(REGISTRATION_ID)
                 .name(name)
                 .build();
 
@@ -92,19 +116,51 @@ public class UserControllerTest {
 
         //when
         mvc.perform(post(url)
-            .header(HttpHeaders.AUTHORIZATION, token)
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .content(new ObjectMapper().writeValueAsString(userDto)))
-            .andExpect(status().isOk());
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isOk());
 
         //then
         User user = userRepository.findByUserId(UserId.builder()
-                .email(email)
-                .registrationId(registrationId)
+                .email(EMAIL)
+                .registrationId(REGISTRATION_ID)
                 .build()).orElse(null);
+
         assertThat(user, is(notNullValue()));
-        assertThat(user.getUserId().getEmail(), equalTo(email));
-        assertThat(user.getUserId().getRegistrationId(), equalTo(registrationId));
+        assertThat(user.getUserId().getEmail(), equalTo(EMAIL));
+        assertThat(user.getUserId().getRegistrationId(), equalTo(REGISTRATION_ID));
         assertThat(user.getName(), equalTo(name));
+    }
+
+    @Test
+    @Transactional
+    public void 사용자_닉네임_변경() throws Exception {
+        String nickname = "hyot88test";
+        UserDto userDto = UserDto.builder()
+                .email(EMAIL)
+                .registrationId(REGISTRATION_ID)
+                .nickname(nickname)
+                .build();
+
+        String url = "http://localhost:" + port + "/user/nickname/1";
+
+        //when
+        mvc.perform(patch(url)
+                        .header(HttpHeaders.AUTHORIZATION, token)
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(new ObjectMapper().writeValueAsString(userDto)))
+                .andExpect(status().isOk());
+
+        //then
+        User user = userRepository.findByUserId(UserId.builder()
+                .email(EMAIL)
+                .registrationId(REGISTRATION_ID)
+                .build()).orElse(null);
+
+        assertThat(user, is(notNullValue()));
+        assertThat(user.getUserId().getEmail(), equalTo(EMAIL));
+        assertThat(user.getUserId().getRegistrationId(), equalTo(REGISTRATION_ID));
+        assertThat(user.getNickname(), equalTo(nickname));
     }
 }
