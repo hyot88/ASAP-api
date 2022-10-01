@@ -94,7 +94,7 @@ public class UserControllerTest {
     }
 
     @After
-    public void exit() {
+    public void exit() throws Exception {
         userRepository.delete(User.builder()
                 .userId(UserId.builder()
                         .email(EMAIL)
