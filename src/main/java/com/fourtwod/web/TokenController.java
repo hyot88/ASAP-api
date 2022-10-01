@@ -23,7 +23,7 @@ import java.util.Map;
 //@ApiIgnore
 public class TokenController {
 
-    @ApiOperation(value = "[임시] 토큰 생성", notes = "토큰을 생성합니다.", response = ApiResult.class)
+    @ApiOperation(value = "토큰 생성", notes = "토큰을 생성합니다.\nSwagger 테스트용일뿐 API 요청시에는, Client에서 토큰 생성 하는 것을 원칙으로 합니다.", response = ApiResult.class)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "code", value = "업체 코드", required = true, dataType = "string", paramType = "query", defaultValue = "front")
             , @ApiImplicitParam(name = "secretKey", value = "비밀키", required = true, dataType = "string", paramType = "query", defaultValue = "7e8b6e0ec18ca17a9fc54a20848656d0")
