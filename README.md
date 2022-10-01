@@ -1,6 +1,6 @@
 > # ASAP-api
 > ### 42D Project v2 - ASAP API 서버
-> 운영 URL: [ASAP-api Swagger](http://ec2-52-78-162-180.ap-northeast-2.compute.amazonaws.com:8080/swagger-ui.html)
+> 운영 URL: [ASAP-api Swagger](http://ec2-52-78-162-180.ap-northeast-2.compute.amazonaws.com/swagger-ui.html)
 
 ### 1. 사용 기술
   * Spring Boot 2.1.7
@@ -8,7 +8,9 @@
   * JPA
   * JWT 0.9.1
   * Swagger 2.9.2
-  * AWS (EC2, RDS)
+  * AWS (EC2, RDS, IAM, S3, CodeDeploy)
+  * Travis CI
+  * NGINX 1.20
 
 ### 2. 현재까지 구현된 기능 (진행중,,,)
 * **JWT 토큰 인증**
