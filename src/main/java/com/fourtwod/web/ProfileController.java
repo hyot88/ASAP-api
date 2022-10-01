@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Api(tags = {"프로파일 API"})
 @RestController
+//@ApiIgnore
 public class ProfileController {
 
     private final Environment env;
