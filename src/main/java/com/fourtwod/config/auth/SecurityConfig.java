@@ -26,6 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 , "/favicon.ico"
                 , "/csrf"
                 , "/h2-console/**"
+                , "/profile"
                 , "/token");
     }
 }
