@@ -1,6 +1,5 @@
 > # ASAP-api
 > ### 42D Project v2 - ASAP API 서버
-> 운영 URL: [ASAP-api Swagger](http://ec2-52-78-162-180.ap-northeast-2.compute.amazonaws.com/swagger-ui.html)
 
 ### 1. 사용 기술
   * Spring Boot 2.1.7
